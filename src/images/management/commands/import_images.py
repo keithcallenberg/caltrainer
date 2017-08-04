@@ -3,10 +3,10 @@ import os
 import fnmatch
 
 from django.core.management.base import BaseCommand, CommandError
+from django.core.files import File
 
 from projects.models import Project
 from images.models import Image
-
 
 class Command(BaseCommand):
     """
@@ -33,8 +33,10 @@ class Command(BaseCommand):
             match.extend(fnmatch.filter(files, '*.[Pp][Nn][Gg]'))
             match.extend(fnmatch.filter(files, '*.[Tt][Ii][Ff]'))
             match.extend(fnmatch.filter(files, '*.[Tt][Ii][Ff][Ff]'))
-            
+
             for m in match:
                 # FIXME: filename should be relative to settings.MEDIA_ROOT
-                im = Image(filename=os.path.join(path, m), project=project)
+                im = Image(project=project)
+                im.image.save(m, File(open(os.path.join(path, m))))
                 im.save()
+                print '.',

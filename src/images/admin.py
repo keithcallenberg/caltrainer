@@ -5,7 +5,7 @@ from images.models import Image, ImageLabel
 
 
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'project', 'updated', )
+    list_display = ('image', 'project', 'updated', )
     readonly_fields = ('preview',)
 
 

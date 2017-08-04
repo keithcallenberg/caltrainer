@@ -14,8 +14,8 @@ class Image(models.Model):
     """
     Reference to a particular image file
     """
-    
-    filename = models.CharField(max_length=100)
+
+    image = models.ImageField()
     project = models.ForeignKey(Project)
     updated = models.DateTimeField(auto_now=True)
     
@@ -46,7 +46,7 @@ class ImageLabel(models.Model):
     
     def __init__(self, *args, **kwargs):
         """
-        To detect when label is added, it is neccesary to store original value
+        To detect when label is added, it is necesary to store original value
         """
         super(ImageLabel, self).__init__(*args, **kwargs)
         self.__original_label = self.label
