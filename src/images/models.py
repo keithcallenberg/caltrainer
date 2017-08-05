@@ -36,6 +36,8 @@ class ImageLabel(models.Model):
     project = models.ForeignKey(Project)
     # Labels are added later
     label = models.ForeignKey(Label, blank=True, null=True)
+    x_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
+    y_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     
     def get_absolute_url(self):
