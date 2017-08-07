@@ -12,6 +12,7 @@
             <div class="panel-heading"><span class="h3"><a href="/p/{{ project.slug }}/">{{ project.title }}</a></span> <span class="label label-{{ project.is_active|yesno:'success,default' }}">{{ project.is_active|yesno:'Active,Inactive' }}</span></div>
             <div class="panel-body">
                 <p>{{ project.description|safe }}</p>
+                <p>{{ project.}}</p>
             </div>
         </div>
     </div>

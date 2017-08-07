@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render
 
-from projects.models import Project, UsersProject
+from projects.models import Project, UsersProject, Label
 from images.models import ImageLabel, Image
 
 
@@ -20,7 +20,7 @@ class ProjectsListView(ListView):
 class ProjectDetailView(DetailView):
     model = Project
     
-    def get_unlabeled(self):
+    def get_next(self, *args, **kwargs):
         """
         Returns URL of one of unlabeled images for particular user
         """
@@ -28,7 +28,7 @@ class ProjectDetailView(DetailView):
         if not self.request.user:
             return None
         
-        im_pk = ImageLabel.objects.filter(user=self.request.user, label__isnull=True).values_list('id', flat=True).first()
+        im_pk = Image.objects.filter(project=self.object).exclude(imagelabel__user=self.request.user).values_list('id', flat=True).first()
         if im_pk:
             return '/p/%s/image/%s/' % (self.object.slug, im_pk)
         else:
@@ -64,15 +64,21 @@ class JoinProjectView(LoginRequiredMixin, TemplateView):
         up = UsersProject(user=self.request.user, project=project)
         up.save()
         
-        im_set = Image.objects.filter(project=project)
-        # Choose random images from all available
-        im_ids = sample(xrange(len(im_set)), project.train_count)
-        for i in im_ids:
-            il = ImageLabel(image=im_set[i], user=self.request.user, project=project)
-            il.save()
-        
         return render(request, self.template_name, {
             'message': "You have joined the %s project!" % (project.title),
-            'project': project,
-            'first_img': '/p/%s/image/%s/' % (project.slug, il.pk)
+            'project': project
         })
+
+
+def label_next_image(request, slug):
+    project = Project.objects.get(slug=slug)
+    image = Image.objects.filter(project=project).exclude(imagelabel__user=request.user).first()
+    labels = Label.objects.filter(project=project)
+    progress = UsersProject.objects.get(user=request.user, project=project).get_complete_percent()
+
+    return render(request, "images/imagelabel_form.html", {
+        "image": image,
+        "project": project,
+        "labels": labels,
+        "progress": progress,
+    })

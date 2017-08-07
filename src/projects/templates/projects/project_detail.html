@@ -29,8 +29,8 @@
     <button class="btn btn-primary" type="submit" data-toggle="modal" data-target="#join-modal">Join this project</button></div>
 </form>
 {% endif %}
-{% if view.get_unlabeled %}
-<div class="alert alert-info"><a href="{{ view.get_unlabeled }}" class="btn btn-primary btn" role="button">Label images</a></div>
+{% if view.get_next %}
+<div class="alert alert-info"><a href="/p/{{object.slug}}/next/" class="btn btn-primary btn" role="button">Label images</a></div>
 {% endif %}
 {% else %}
     <p class="bg-info">You must log in to participate.</p>

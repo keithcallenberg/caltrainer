@@ -14,15 +14,18 @@ class Project(models.Model):
     """
     
     slug = models.SlugField(unique=True, blank=True,
-        help_text="Will be provided automaticly if left blank.")
+        help_text="Will be provided automatically if left blank.")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True,
         help_text="Can contain HTML. Will be placed inside a DIV element.")
     is_active = models.BooleanField(default=False,
         help_text="Enable project when it is ready for labeling.")
+    # TODO: make train_count nullable to remove limits for some projects
     train_count = models.IntegerField(verbose_name="Training image count",
         help_text="Number of images to show for a single user.")
     created = models.DateTimeField(auto_now_add=True)
+    annotated = models.BooleanField(default=False)
+    users_can_add_labels = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -49,6 +52,7 @@ class Label(models.Model):
         "Can contain HTML. Will be placed inside a DIV element.")
     project = models.ForeignKey(Project,
         help_text="A project offering this label as a choice to user.")
+    created_by = models.ForeignKey(User, null=True, blank=True)
     
     class Meta:
         unique_together = ('code', 'project')

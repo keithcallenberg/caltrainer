@@ -31,7 +31,7 @@
 {% block content %}
 <div class="container">
     <div class="col-md-9">
-        <img class="center-block annotatable" src="{{ object.image.image.url }}" alt="Image to label">
+        <img class="center-block {% if project.annotated %}annotatable{% endif %}" src="{{ image.image.url }}" alt="Image to label">
     </div>
     <div class="col-md-3">
     <form action="" method="post">

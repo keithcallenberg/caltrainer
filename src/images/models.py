@@ -20,10 +20,10 @@ class Image(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return '%s (%s)' % (self.filename, self.project.slug)
+        return '%s (%s)' % (self.image.name, self.project.slug)
     
     def preview(self):
-        return format_html('<img src="/{}">', self.filename)
+        return format_html('<img src="{}">', self.image.url)
 
 
 class ImageLabel(models.Model):
@@ -34,7 +34,6 @@ class ImageLabel(models.Model):
     image = models.ForeignKey(Image)
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
-    # Labels are added later
     label = models.ForeignKey(Label, blank=True, null=True)
     x_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
     y_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -44,14 +43,7 @@ class ImageLabel(models.Model):
         return '/p/%s/image/%s' % (self.project.slug, self.pk)
     
     def __str__(self):
-        return "%s - %s" % (self.user.username, self.image.filename)
-    
-    def __init__(self, *args, **kwargs):
-        """
-        To detect when label is added, it is necesary to store original value
-        """
-        super(ImageLabel, self).__init__(*args, **kwargs)
-        self.__original_label = self.label
+        return "%s - %s" % (self.user.username, self.image.image.name)
     
     def save(self, *args, **kwargs):
         """

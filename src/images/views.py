@@ -3,7 +3,7 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 
-from images.models import ImageLabel
+from images.models import ImageLabel, Image
 from projects.models import Label, UsersProject
 
 
@@ -61,3 +61,4 @@ class ImageLabelUpdateView(LoginRequiredMixin, UpdateView):
             project=self.object.project)
         context['progress'] = up.get_complete_percent()
         return context
+
