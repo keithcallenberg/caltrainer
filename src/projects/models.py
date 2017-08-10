@@ -5,6 +5,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.db.models import Count
 
 
 @python_2_unicode_compatible
@@ -12,17 +13,18 @@ class Project(models.Model):
     """
     Image labeling project
     """
-    
+
     slug = models.SlugField(unique=True, blank=True,
-        help_text="Will be provided automatically if left blank.")
+                            help_text="Will be provided automatically if left blank.")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True,
-        help_text="Can contain HTML. Will be placed inside a DIV element.")
+                                   help_text="Can contain HTML. Will be placed inside a DIV element.")
     is_active = models.BooleanField(default=False,
-        help_text="Enable project when it is ready for labeling.")
-    # TODO: make train_count nullable to remove limits for some projects
+                                    help_text="Enable project when it is ready for labeling.")
     train_count = models.IntegerField(verbose_name="Training image count",
-        help_text="Number of images to show for a single user.")
+                                      help_text="Number of images to show for a single user.",
+                                      null=True,
+                                      blank=True)
     created = models.DateTimeField(auto_now_add=True)
     annotated = models.BooleanField(default=False)
     users_can_add_labels = models.BooleanField(default=False)
@@ -42,16 +44,16 @@ class Label(models.Model):
     """
     Labels available in a project
     """
-    
+
     text = models.CharField(max_length=50,
-        help_text="Short text shown as a choice.")
+                            help_text="Short text shown as a choice.")
     code = models.CharField(max_length=20, blank=True,
-        help_text="Unique code representing this label.")
+                            help_text="Unique code representing this label.")
     description = models.TextField(blank=True,
-        help_text="Longer description to explain meaning of label." +
-        "Can contain HTML. Will be placed inside a DIV element.")
+                                   help_text="Longer description to explain meaning of label." +
+                                             "Can contain HTML. Will be placed inside a DIV element.")
     project = models.ForeignKey(Project,
-        help_text="A project offering this label as a choice to user.")
+                                help_text="A project offering this label as a choice to user.")
     created_by = models.ForeignKey(User, null=True, blank=True)
     
     class Meta:
@@ -84,4 +86,8 @@ class UsersProject(models.Model):
         return "%s - %s" % (self.user.username, self.project.title)
     
     def get_complete_percent(self):
-        return round((self.completed_imgs * 100.0) / self.project.train_count, 1)
+        if self.project.train_count is not None:
+            return round((self.completed_imgs * 100.0) / self.project.train_count, 1)
+        else:
+            count = Project.objects.filter(id=self.project.id).aggregate(Count('image'))
+            return round((self.completed_imgs * 100.0) / count['image__count'], 1)
