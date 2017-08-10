@@ -35,8 +35,10 @@ class ImageLabel(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
     label = models.ForeignKey(Label, blank=True, null=True)
-    x_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
-    y_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
+    x1_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
+    y1_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
+    x2_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
+    y2_coordinate = models.PositiveSmallIntegerField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     
     def get_absolute_url(self):
@@ -50,8 +52,7 @@ class ImageLabel(models.Model):
         Override to update completed image counter
         """
         super(ImageLabel, self).save(*args, **kwargs)
-        
-        if not self.__original_label and self.label:
-            up = UsersProject.objects.get(user=self.user, project=self.project)
-            up.completed_imgs += 1
-            up.save()
+
+        up = UsersProject.objects.get(user=self.user, project=self.project)
+        up.completed_imgs += 1
+        up.save()

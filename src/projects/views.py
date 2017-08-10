@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from random import sample
+from random import randint
 
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
+
+import json
 
 from projects.models import Project, UsersProject, Label
 from images.models import ImageLabel, Image
@@ -72,12 +74,39 @@ class JoinProjectView(LoginRequiredMixin, TemplateView):
 
 def label_next_image(request, slug):
     project = Project.objects.get(slug=slug)
-    image = Image.objects.filter(project=project).exclude(imagelabel__user=request.user).first()
-    labels = Label.objects.filter(project=project)
-    progress = UsersProject.objects.get(user=request.user, project=project).get_complete_percent()
+
+    if request.method == "POST" and request.is_ajax():
+        json_object = {'success': False}
+        image = Image.objects.get(id=request.POST.get('image'))
+        annos = request.POST.get('annos', [])
+        annos = json.loads(annos)
+        for anno in annos:
+            # look for label
+            label, created = Label.objects.get_or_create(text=anno['label'],
+                                                         project=project,
+                                                         defaults={"created_by": request.user})
+
+            ImageLabel.objects.create(label=label,
+                                      image=image,
+                                      user=request.user,
+                                      project=project,
+                                      x1_coordinate=anno['x1'],
+                                      y1_coordinate=anno['y1'],
+                                      x2_coordinate=anno['x2'],
+                                      y2_coordinate=anno['y2'])
+
+        json_object['success'] = True
+
+        return JsonResponse(json_object)
+    else:
+        potential_images = Image.objects.filter(project=project).exclude(imagelabel__user=request.user)
+        random_index = randint(0, potential_images.count() - 1)
+        next_image = potential_images[random_index]
+        labels = Label.objects.filter(project=project)
+        progress = UsersProject.objects.get(user=request.user, project=project).get_complete_percent()
 
     return render(request, "images/imagelabel_form.html", {
-        "image": image,
+        "image": next_image,
         "project": project,
         "labels": labels,
         "progress": progress,
