@@ -6,3 +6,4 @@ src/db.sqlite3
 src/media/*
 
 /src/media/
+/.Dockerfile.swp
