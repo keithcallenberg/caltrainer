@@ -82,9 +82,16 @@ def label_next_image(request, slug):
         annos = json.loads(annos)
         for anno in annos:
             # look for label
-            label, created = Label.objects.get_or_create(text=anno['label'],
-                                                         project=project,
-                                                         defaults={"created_by": request.user})
+            label = Label.objects.filter(text=anno['label'],
+                                         project=project).first()
+            if label is None:
+                if project.users_can_add_labels:
+                    label = Label(text=anno['label'],
+                                  project=project,
+                                  created_by=request.user)
+                else:
+                    # TODO: might want to give some sort of warning here
+                    continue
 
             ImageLabel.objects.create(label=label,
                                       image=image,
@@ -99,6 +106,25 @@ def label_next_image(request, slug):
 
         return JsonResponse(json_object)
     else:
+        if request.method == "POST":
+            # look for label
+            label = Label.objects.filter(text=request.POST.get('label'),
+                                         project=project).first()
+            if label is None:
+                if project.users_can_add_labels:
+                    label = Label(text=request.POST.get('label'),
+                                  project=project,
+                                  created_by=request.user)
+                else:
+                    return Http404("Error: users cannot create labels for this project.")
+
+            image = Image.objects.get(id=request.POST.get('image'))
+
+            ImageLabel.objects.create(label=label,
+                                      image=image,
+                                      user=request.user,
+                                      project=project)
+
         potential_images = Image.objects.filter(project=project).exclude(imagelabel__user=request.user)
         random_index = randint(0, potential_images.count() - 1)
         next_image = potential_images[random_index]

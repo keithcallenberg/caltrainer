@@ -52,7 +52,7 @@
 
                 data: {
                     "csrfmiddlewaretoken": '{{ csrf_token }}',
-                    "image": {{image.id}},
+                    "image": {{ image.id }},
                     "annos": annotations,
                 },
                 success: function (data) {
@@ -98,6 +98,9 @@
                 </li>
             {% endfor %}
             </ul>
+            {% if project.users_can_add_labels %}
+                <input type="text" name="new-label" class="form-control" />
+            {% endif %}
         {% else %}
             {% for label in labels %}
                 <li class="list-group-item">
@@ -105,8 +108,9 @@
                 </li>
             {% endfor %}
         {% endif %}
-        <button id="save" type="button" class="btn btn-primary btn">Save and load next</button>
-        <button id="skip" type="button" class="btn btn-default btn" onclick="location.reload();">Skip</button>
+        <input type="hidden" name="image" value="{{ image.id }}" />
+        <button id="save" type="button" class="btn btn-primary">Save and load next</button>
+        <button id="skip" type="button" class="btn btn-default" onclick="location.reload();">Skip</button>
     </form>
     </div>
 </div>
