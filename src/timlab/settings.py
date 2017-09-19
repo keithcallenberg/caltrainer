@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'projects',
     'images',
 ]
@@ -141,3 +142,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = 'index'
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# aws secret file format is bucket:aws:key
+aws_path = os.path.join(BASE_DIR, 'timlab', 'aws_secret')
+aws_secret = open(aws_path).read().strip().split(":")
+AWS_ACCESS_KEY_ID = aws_secret[1]
+AWS_SECRET_ACCESS_KEY = aws_secret[2]
+AWS_STORAGE_BUCKET_NAME = aws_secret[0]
+

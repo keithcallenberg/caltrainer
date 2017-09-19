@@ -2,6 +2,7 @@
 *.pyc
 src/*/migrations
 src/timlab/secret_key
+src/timlab/aws_secret
 src/db.sqlite3
 src/media/*
 
