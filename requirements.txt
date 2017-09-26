@@ -2,3 +2,4 @@ Django==1.10
 Pillow
 django-storages
 boto3
+django-extensions

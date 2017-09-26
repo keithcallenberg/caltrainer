@@ -8,6 +8,7 @@ from django.core.files import File
 from projects.models import Project
 from images.models import Image
 
+
 class Command(BaseCommand):
     """
     Usage example:

@@ -89,6 +89,7 @@ def label_next_image(request, slug):
                     label = Label(text=anno['label'],
                                   project=project,
                                   created_by=request.user)
+                    label.save()
                 else:
                     # TODO: might want to give some sort of warning here
                     continue

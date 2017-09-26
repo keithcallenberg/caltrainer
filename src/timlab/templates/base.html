@@ -22,6 +22,21 @@
         <style type="text/css">
             body { padding-top: 70px; }
         </style>
+        <style>
+            .tarfile {
+                width: 0.1px;
+                height: 0.1px;
+                opacity: 0;
+                overflow: hidden;
+                position: absolute;
+                z-index: -1;
+            }
+            .tarfile + label {
+                color: black;
+                /* background-color: #7266ba; */
+                /* display: inline-block; */
+            }
+        </style>
         {% block header %}{% endblock %}
     </head>
     <body>
@@ -38,10 +53,17 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated %}
-                        <li><a href="#">{{ user.get_full_name }} ({{ user.get_username }})</a></li>
-                        <li><a href="/logout/">Logout</a></li>
+                            <li><a href="#">{{ user.get_full_name }} ({{ user.get_username }})</a></li>
+                            <li><a href="/logout/">Logout</a></li>
+                            {% if request.user.is_superuser and project %}
+                                <form action="/i/{{project.id}}/upload-tar/" method="POST" enctype="multipart/form-data" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="file" name="tarfile" id="tarfile" class="tarfile" onchange="this.form.submit()" />
+                                    <label class="btn btn-green" for="tarfile">Import Tar</label>
+                                </form>
+                            {% endif %}
                         {% else %}
-                        <li><a href="/login/">Login</a></li>
+                            <li><a href="/login/">Login</a></li>
                         {% endif %}
                         <li><a href="/admin/">Admin</a></li>
                     </ul>

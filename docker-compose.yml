@@ -6,3 +6,5 @@ services:
     command: /code/entrypoint.sh
     ports:
       - "8000:8000"
+    volumes:
+      - ~/projects/timlab/src:/code/

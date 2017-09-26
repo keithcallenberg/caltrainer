@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'storages',
     'projects',
     'images',
@@ -140,6 +141,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+S3_USE_SIGV4 = True
+AWS_S3_REGION_NAME = 'us-east-2'
 
 LOGIN_REDIRECT_URL = 'index'
 
