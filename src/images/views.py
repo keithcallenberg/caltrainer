@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.core.files import File
 from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
 
 from images.models import ImageLabel, Image
 from projects.models import Label, UsersProject, Project
@@ -88,3 +90,26 @@ def upload_tar(request, projectid):
             })
 
 
+def export_labels(request, projectid):
+    project = Project.objects.get(id=projectid)
+    images = Image.objects.filter(project=project,
+                                  imagelabel__isnull=False)
+
+    import tarfile
+
+    txtfiles = []
+    for image in images:
+        txtfile = os.path.basename(image.image.name) + '.txt'
+        with open(txtfile, 'w') as file:
+            for label in image.imagelabel_set.all():
+                label_row = "{label} {x} {y} {width} {height}".format(label=label.label.code,
+                                                                      x=label.x1_coordinate,
+                                                                      y=label.y1_coordinate,
+                                                                      width=label.x2_coordinate-label.x1_coordinate,
+                                                                      height=label.y2_coordinate-label.y1_coordinate)
+                file.write(label_row)
+        txtfiles.append(txtfile)
+        break
+
+    return HttpResponse(label_row, content_type='text/plain')
+    # remove txtfiles
