@@ -93,30 +93,32 @@ def upload_tar(request, projectid):
 def export_labels(request, projectid):
     project = Project.objects.get(id=projectid)
     images = Image.objects.filter(project=project,
-                                  imagelabel__isnull=False)
+                                  imagelabel__isnull=False).distinct()
 
     import tarfile
 
     txtfiles = []
-    tar = tarfile.open("export.tar", "w")
+    response = HttpResponse(content_type='application/x-gzip')
+    tar = tarfile.open(fileobj=response, mode='w:gz')
     for image in images:
         txtfile = os.path.splitext(os.path.basename(image.image.name))[0] + '.txt'
+        labels = ImageLabel.objects.filter(image=image)
         with open(txtfile, 'w') as file:
-            for label in image.imagelabel_set.all():
-                label_row = "{label} {x} {y} {width} {height}".format(label=label.label.code,
-                                                                      x=label.x1_coordinate,
-                                                                      y=label.y1_coordinate,
-                                                                      width=label.x2_coordinate-label.x1_coordinate,
-                                                                      height=label.y2_coordinate-label.y1_coordinate)
+            for label in labels:
+                label_row = "{label} {x} {y} {width} {height}\n".format(label=label.label.code,
+                                                                        x=label.x1_coordinate,
+                                                                        y=label.y1_coordinate,
+                                                                        width=label.x2_coordinate-label.x1_coordinate,
+                                                                        height=label.y2_coordinate-label.y1_coordinate)
                 file.write(label_row)
+        tar.add(image.image.name, arcname=os.path.basename(image.image.name))
         tar.add(txtfile)
+        os.remove(txtfile)
         #txtfiles.append(txtfile)
     tar.close()
 
     # remove txtfiles
-    # remove tar file
 
-    response = HttpResponse(label_row, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename="export.tar"'
+    response['Content-Disposition'] = 'attachment; filename="export.tar.gz"'
     return response
 
