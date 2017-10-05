@@ -98,8 +98,9 @@ def export_labels(request, projectid):
     import tarfile
 
     txtfiles = []
+    tar = tarfile.open("export.tar", "w")
     for image in images:
-        txtfile = os.path.basename(image.image.name) + '.txt'
+        txtfile = os.path.splitext(os.path.basename(image.image.name))[0] + '.txt'
         with open(txtfile, 'w') as file:
             for label in image.imagelabel_set.all():
                 label_row = "{label} {x} {y} {width} {height}".format(label=label.label.code,
@@ -108,8 +109,14 @@ def export_labels(request, projectid):
                                                                       width=label.x2_coordinate-label.x1_coordinate,
                                                                       height=label.y2_coordinate-label.y1_coordinate)
                 file.write(label_row)
-        txtfiles.append(txtfile)
-        break
+        tar.add(txtfile)
+        #txtfiles.append(txtfile)
+    tar.close()
 
-    return HttpResponse(label_row, content_type='text/plain')
     # remove txtfiles
+    # remove tar file
+
+    response = HttpResponse(label_row, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="export.tar"'
+    return response
+
