@@ -138,3 +138,15 @@ def label_next_image(request, slug):
         "labels": labels,
         "progress": progress,
     })
+
+
+def labels(request, slug):
+
+    project = Project.objects.get(slug=slug)
+    labels = Label.objects.filter(project=project)
+
+    topics = [{'id': x.id, 'title': x.text} for x in labels]
+
+    response = {'detectedTopics': topics}
+
+    return JsonResponse(response, safe=False)

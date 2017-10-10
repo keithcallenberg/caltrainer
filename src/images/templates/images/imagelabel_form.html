@@ -29,6 +29,9 @@
 
 <script type="text/javascript">
     $( document ).ready(function() {
+
+        anno.addPlugin('SemanticTagging', { endpoint_url: '/p/{{project.slug}}/labels' });
+
         $("#save").click(function () {
             var annos = anno.getAnnotations();
             var annotations = [];
