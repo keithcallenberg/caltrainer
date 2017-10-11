@@ -142,8 +142,11 @@ def label_next_image(request, slug):
 
 def labels(request, slug):
 
+    query = request.GET.get('source')
+
     project = Project.objects.get(slug=slug)
-    labels = Label.objects.filter(project=project)
+    labels = Label.objects.filter(project=project,
+                                  text__icontains=query)
 
     topics = [{'id': x.id, 'title': x.text} for x in labels]
 

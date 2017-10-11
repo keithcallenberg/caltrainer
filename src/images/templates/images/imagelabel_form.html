@@ -30,6 +30,12 @@
 <script type="text/javascript">
     $( document ).ready(function() {
 
+
+        $(".labeloption").click(function () {
+            var annotext = $(this).text().trim();
+            $('.annotorious-editor-text').val(annotext);
+        });
+
         anno.addPlugin('SemanticTagging', { endpoint_url: '/p/{{project.slug}}/labels' });
 
         $("#save").click(function () {
@@ -106,7 +112,7 @@
             {% endif %}
         {% else %}
             {% for label in labels %}
-                <li class="list-group-item">
+                <li class="labeloption list-group-item">
                     {{ label.text }} {%if label.description %}- {{ label.description }}{% endif %}
                 </li>
             {% endfor %}
