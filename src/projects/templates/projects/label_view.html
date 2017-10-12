@@ -36,7 +36,12 @@
         {% endfor %}
     </div>
     <div class="col-md-3">
-        Number of images with this label: {{label_count}}
+        <p>Number of images with this label: {{label_count}}</p>
+
+        {% if label.representative_image %}
+            Representative image:
+            <img class="img-responsive" src="{{label.representative_image.url}}" />
+        {% endif %}
     </div>
 </div>
 {% endblock %}
