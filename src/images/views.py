@@ -63,7 +63,7 @@ class ImageLabelUpdateView(LoginRequiredMixin, UpdateView):
         context['labels'] = Label.objects.filter(project=self.object.project).order_by('text')
         up = UsersProject.objects.get(user=self.request.user,
                                       project=self.object.project)
-        context['progress'] = up.get_complete_percent()
+        context['progress'] = up.get_progress()
         return context
 
 

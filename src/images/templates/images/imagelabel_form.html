@@ -112,8 +112,11 @@
             {% endif %}
         {% else %}
             {% for label in labels %}
-                <li class="labeloption list-group-item">
-                    {{ label.text }} {%if label.description %}- {{ label.description }}{% endif %}
+                <li class="list-group-item">
+                    <span class="labeloption">{{ label.text }}</span> {%if label.description %}- {{ label.description }}{% endif %}
+                    {% if label.representative_image %}
+                        <a href="{{label.representative_image.url}}" target="_blank">&gt;</a>
+                    {% endif %}
                 </li>
             {% endfor %}
         {% endif %}
@@ -124,8 +127,9 @@
     </div>
 </div>
 <div class="progress">
-    <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
-        {{ progress }}%
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress.2 }}" aria-valuemin="0" aria-valuemax="100">
+        {{ progress.2 }}%
     </div>
+    ({{ progress.0 }} / {{ progress.1 }} images)
 </div>
 {% endblock %}

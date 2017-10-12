@@ -129,8 +129,8 @@ def label_next_image(request, slug):
         potential_images = Image.objects.filter(project=project).exclude(imagelabel__user=request.user)
         random_index = randint(0, potential_images.count() - 1)
         next_image = potential_images[random_index]
-        labels = Label.objects.filter(project=project)
-        progress = UsersProject.objects.get(user=request.user, project=project).get_complete_percent()
+        labels = Label.objects.filter(project=project).order_by('text')
+        progress = UsersProject.objects.get(user=request.user, project=project).get_progress()
 
     return render(request, "images/imagelabel_form.html", {
         "image": next_image,

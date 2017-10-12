@@ -55,6 +55,7 @@ class Label(models.Model):
     project = models.ForeignKey(Project,
                                 help_text="A project offering this label as a choice to user.")
     created_by = models.ForeignKey(User, null=True, blank=True)
+    representative_image = models.ImageField(null=True, blank=True)
     
     class Meta:
         unique_together = ('code', 'project')
@@ -85,9 +86,11 @@ class UsersProject(models.Model):
     def __str__(self):
         return "%s - %s" % (self.user.username, self.project.title)
     
-    def get_complete_percent(self):
+    def get_progress(self):
         if self.project.train_count is not None:
-            return round((self.completed_imgs * 100.0) / self.project.train_count, 1)
+            percent = round((self.completed_imgs * 100.0) / self.project.train_count, 1)
+            return (self.completed_imgs, self.project.train_count, percent)
         else:
             count = Project.objects.filter(id=self.project.id).aggregate(Count('image'))
-            return round((self.completed_imgs * 100.0) / count['image__count'], 1)
+            percent = round((self.completed_imgs * 100.0) / count['image__count'], 1)
+            return (self.completed_imgs, count['image__count'], percent)
