@@ -153,3 +153,19 @@ def labels(request, slug):
     response = {'detectedTopics': topics}
 
     return JsonResponse(response, safe=False)
+
+
+def label_view(request, labelid):
+    label = Label.objects.get(id=labelid)
+
+    images = ImageLabel.objects.filter(label=label)
+
+    label_count = images.count()
+
+    return render(request, "projects/label_view.html", {
+        "label": label,
+        "project": label.project,
+        "images": images,
+        "label_count": label_count,
+        "labels": labels
+    })

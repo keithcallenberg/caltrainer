@@ -36,9 +36,9 @@
     <p class="bg-info">You must log in to participate.</p>
 {% endif %}
 <div>
-    <ul class="list-group">In this project you will be asked to classify small pictures into one of following classes:
+    <ul class="list-group">In this project you will be asked to classify/label pictures into one of following classes:
         {% for k in project.label_set.all %}
-        <li class="list-group-item">{{ k.text }}{% if k.code %} ({{ k.code }}){% endif %}
+        <li class="list-group-item"><a href="/p/label/{{k.id}}/">{{ k.text }}</a>{% if k.code %} ({{ k.code }}){% endif %}
             <span class="tip-content">– {{ k.description|safe }}</span></li>
         {% empty %}
         <li class="list-group-item bg-info">No labeling classes have been defined</li>

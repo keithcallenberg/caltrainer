@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Label details{% endblock %}
+
+{% block nav-menu %}<li><a href="/p/{{ object.project.slug }}/">{{ object.project.title }}</a></li>
+<li>{% if view.next_unlabeled %}<a href="/p/{{ object.project.slug }}/image/{{ view.next_unlabeled.pk }}/">Image</a>{% else %}<a href="#">No images</a>{% endif %}</li>{% endblock %}
+
+{% block header %}
+<style type="text/css">
+    div.progress {
+        margin: 1em;
+    }
+    div.progress-bar {
+        min-width: 3em;
+    }
+    .popover {
+        max-width: 70%;
+        left: 25%;
+        top: -1em;
+    }
+
+    .list-group-item:hover .popover { display: block; }
+    
+    label {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-md-9">
+        {% for image in images %}
+            <div class="col-md-4"><img class="img-responsive" src="{{image.image.image.url}}" /></div>
+        {% endfor %}
+    </div>
+    <div class="col-md-3">
+        Number of images with this label: {{label_count}}
+    </div>
+</div>
+{% endblock %}
