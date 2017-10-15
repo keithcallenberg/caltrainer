@@ -158,9 +158,11 @@ def labels(request, slug):
 def label_view(request, labelid):
     label = Label.objects.get(id=labelid)
 
-    images = ImageLabel.objects.filter(label=label)[:100]
+    images = ImageLabel.objects.filter(label=label)
 
     label_count = images.count()
+
+    images = images[:100]
 
     return render(request, "projects/label_view.html", {
         "label": label,
