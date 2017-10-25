@@ -56,6 +56,7 @@ class Label(models.Model):
                                 help_text="A project offering this label as a choice to user.")
     created_by = models.ForeignKey(User, null=True, blank=True)
     representative_image = models.ImageField(null=True, blank=True)
+    preliminary = models.BooleanField(default=False)  # indicates a placeholder label
     
     class Meta:
         unique_together = ('code', 'project')
@@ -70,6 +71,7 @@ class Label(models.Model):
         if self.code:
             return "%s (%s - %s)" % (self.text, self.code, self.project.title)
         return "%s (%s)" % (self.text, self.project.title)
+
 
 @python_2_unicode_compatible
 class UsersProject(models.Model):

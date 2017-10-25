@@ -18,6 +18,7 @@ class Image(models.Model):
     image = models.ImageField()
     project = models.ForeignKey(Project)
     updated = models.DateTimeField(auto_now=True)
+    taken_time = updated = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return '%s (%s)' % (self.image.name, self.project.slug)
